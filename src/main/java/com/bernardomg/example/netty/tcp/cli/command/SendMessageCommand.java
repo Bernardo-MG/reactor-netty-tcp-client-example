@@ -31,7 +31,7 @@ import com.bernardomg.example.netty.tcp.cli.CliWriterClientListener;
 import com.bernardomg.example.netty.tcp.cli.version.ManifestVersionProvider;
 import com.bernardomg.example.netty.tcp.client.Client;
 import com.bernardomg.example.netty.tcp.client.ClientListener;
-import com.bernardomg.example.netty.tcp.client.NettyTcpClient;
+import com.bernardomg.example.netty.tcp.client.ReactorNettyTcpClient;
 
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Model.CommandSpec;
@@ -104,7 +104,7 @@ public final class SendMessageCommand implements Runnable {
 
         // Create client
         listener = new CliWriterClientListener(host, port, writer);
-        client = new NettyTcpClient(host, port, listener);
+        client = new ReactorNettyTcpClient(host, port, listener);
         client.connect();
 
         // Send message

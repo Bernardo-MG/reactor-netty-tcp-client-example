@@ -1,4 +1,4 @@
-# Netty TCP Client Example
+# Reactor Netty TCP Client Example
 
 A small Netty TCP client to serve as an example.
 

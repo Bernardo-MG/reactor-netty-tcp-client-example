@@ -32,7 +32,7 @@ import com.bernardomg.cli.picocli.version.AbstractManifestVersionProvider;
  * @author Bernardo Mart&iacute;nez Garrido
  *
  */
-public final class ManifestVersionProvider extends AbstractManifestVersionProvider  {
+public final class ManifestVersionProvider extends AbstractManifestVersionProvider {
 
     /**
      * Default constructor.
