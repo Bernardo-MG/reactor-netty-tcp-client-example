@@ -62,6 +62,7 @@ public final class CliWriterClientListener implements ClientListener {
 
     @Override
     public final void onClose() {
+        writer.println();
         writer.println("------------");
         writer.println("Closing connection");
         writer.println("------------");
@@ -77,21 +78,27 @@ public final class CliWriterClientListener implements ClientListener {
 
     @Override
     public final void onReceive(final String response) {
+        writer.println();
+        writer.println("------------");
         if (response.isEmpty()) {
-            writer.println("Received no response");
+            writer.println("Received no message");
         } else {
-            writer.printf("Received response: %s", response);
+            writer.printf("Received message: %s", response);
             writer.println();
         }
+        writer.println("------------");
     }
 
     @Override
     public final void onSend(final String request) {
-        // Prints the final result
         writer.println();
         writer.println("------------");
-        writer.printf("Sending message %s", request);
-        writer.println();
+        if (request.isEmpty()) {
+            writer.println("Sent no message");
+        } else {
+            writer.printf("Sent message: %s", request);
+            writer.println();
+        }
         writer.println("------------");
     }
 
