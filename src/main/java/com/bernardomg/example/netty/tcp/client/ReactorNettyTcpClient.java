@@ -70,9 +70,9 @@ public final class ReactorNettyTcpClient implements Client {
     @Override
     public final void close() {
         log.trace("Stopping client");
-        
+
         listener.onClose();
-        
+
         connection.dispose();
 
         log.trace("Stopped client");
@@ -108,13 +108,27 @@ public final class ReactorNettyTcpClient implements Client {
         connection.outbound()
             .sendString(dataStream)
             .then()
+            .doOnError(this::handleError)
             .subscribe();
     }
 
+    /**
+     * Error handler which sends errors to the log.
+     *
+     * @param ex
+     *            exception to log
+     */
     private final void handleError(final Throwable ex) {
         log.error(ex.getLocalizedMessage(), ex);
     }
 
+    /**
+     * Request event listener. Will receive a response and send it to the listener.
+     *
+     * @param response
+     * @param request
+     * @return
+     */
     private final Publisher<Void> handleRequest(final NettyInbound response, final NettyOutbound request) {
         return response.receive()
             .doOnNext(next -> {
