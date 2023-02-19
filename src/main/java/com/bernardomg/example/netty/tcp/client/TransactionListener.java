@@ -27,7 +27,7 @@ package com.bernardomg.example.netty.tcp.client;
 /**
  * Transaction listener. Allows reacting to the events of a message transaction.
  *
- * @author Bernardo
+ * @author Bernardo Mart&iacute;nez Garrido
  *
  */
 public interface TransactionListener {
