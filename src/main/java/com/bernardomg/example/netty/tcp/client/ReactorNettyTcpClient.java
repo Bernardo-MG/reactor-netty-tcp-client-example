@@ -39,7 +39,7 @@ import reactor.netty.tcp.TcpClient;
 /**
  * Reactor Netty based TCP client.
  *
- * @author bernardo.martinezg
+ * @author Bernardo Mart&iacute;nez Garrido
  *
  */
 @Slf4j

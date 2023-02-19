@@ -27,7 +27,7 @@ package com.bernardomg.example.netty.tcp.client;
 /**
  * Generic client. Can start a connection, close said connection and send messages.
  *
- * @author bernardo.martinezg
+ * @author Bernardo Mart&iacute;nez Garrido
  *
  */
 public interface Client {
