@@ -126,8 +126,10 @@ public final class ReactorNettyTcpClient implements Client {
      * Request event listener. Will receive a response and send it to the listener.
      *
      * @param response
+     *            response channel
      * @param request
-     * @return
+     *            request channel
+     * @return a publisher which handles the request
      */
     private final Publisher<Void> handleRequest(final NettyInbound response, final NettyOutbound request) {
         return response.receive()
