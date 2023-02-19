@@ -45,21 +45,21 @@ import reactor.netty.tcp.TcpClient;
 @Slf4j
 public final class ReactorNettyTcpClient implements Client {
 
-    private Connection           connection;
+    private Connection                connection;
 
     /**
      * Host for the server to which this client will connect.
      */
-    private final String         host;
+    private final String              host;
 
-    private final ClientListener listener;
+    private final TransactionListener listener;
 
     /**
      * Port for the server to which this client will connect.
      */
-    private final Integer        port;
+    private final Integer             port;
 
-    public ReactorNettyTcpClient(final String hst, final Integer prt, final ClientListener lst) {
+    public ReactorNettyTcpClient(final String hst, final Integer prt, final TransactionListener lst) {
         super();
 
         port = Objects.requireNonNull(prt);
@@ -71,7 +71,7 @@ public final class ReactorNettyTcpClient implements Client {
     public final void close() {
         log.trace("Stopping client");
 
-        listener.onClose();
+        listener.onStop();
 
         connection.dispose();
 
@@ -82,7 +82,7 @@ public final class ReactorNettyTcpClient implements Client {
     public final void connect() {
         log.trace("Starting client");
 
-        listener.onConnect();
+        listener.onStart();
 
         connection = TcpClient.create()
             // Sets connection

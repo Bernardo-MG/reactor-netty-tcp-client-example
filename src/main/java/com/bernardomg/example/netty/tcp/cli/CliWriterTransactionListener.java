@@ -27,15 +27,15 @@ package com.bernardomg.example.netty.tcp.cli;
 import java.io.PrintWriter;
 import java.util.Objects;
 
-import com.bernardomg.example.netty.tcp.client.ClientListener;
+import com.bernardomg.example.netty.tcp.client.TransactionListener;
 
 /**
- * Client listener which will write the context of each step into the CLI console.
+ * Server listener which will write the context of each step into the CLI console.
  *
  * @author Bernardo Mart&iacute;nez Garrido
  *
  */
-public final class CliWriterClientListener implements ClientListener {
+public final class CliWriterTransactionListener implements TransactionListener {
 
     /**
      * Host for the server to which this client will connect.
@@ -43,7 +43,7 @@ public final class CliWriterClientListener implements ClientListener {
     private final String      host;
 
     /**
-     * Port for the server to which this client will connect.
+     * Port which the server will listen to.
      */
     private final Integer     port;
 
@@ -52,7 +52,7 @@ public final class CliWriterClientListener implements ClientListener {
      */
     private final PrintWriter writer;
 
-    public CliWriterClientListener(final String hst, final Integer prt, final PrintWriter wrt) {
+    public CliWriterTransactionListener(final String hst, final Integer prt, final PrintWriter wrt) {
         super();
 
         port = Objects.requireNonNull(prt);
@@ -61,34 +61,34 @@ public final class CliWriterClientListener implements ClientListener {
     }
 
     @Override
-    public final void onClose() {
-        writer.println("Closing connection");
+    public final void onReceive(final String message) {
+        if (message.isEmpty()) {
+            writer.println("Received no message");
+        } else {
+            writer.printf("Received message: %s", message);
+            writer.println();
+        }
     }
 
     @Override
-    public final void onConnect() {
-        writer.printf("Opening connection to %s:%d", host, port);
+    public final void onSend(final String message) {
+        if (message.isEmpty()) {
+            writer.println("Sent no message");
+        } else {
+            writer.printf("Sent message: %s", message);
+            writer.println();
+        }
+    }
+
+    @Override
+    public final void onStart() {
+        writer.printf("Connecting to %s:%d", host, port);
         writer.println();
     }
 
     @Override
-    public final void onReceive(final String response) {
-        if (response.isEmpty()) {
-            writer.println("Received no message");
-        } else {
-            writer.printf("Received message: %s", response);
-            writer.println();
-        }
-    }
-
-    @Override
-    public final void onSend(final String request) {
-        if (request.isEmpty()) {
-            writer.println("Sent no message");
-        } else {
-            writer.printf("Sent message: %s", request);
-            writer.println();
-        }
+    public final void onStop() {
+        writer.println("Stopping connection");
     }
 
 }
