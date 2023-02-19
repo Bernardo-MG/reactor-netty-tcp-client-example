@@ -78,6 +78,7 @@ public final class ReactorNettyTcpClient implements Client {
 
     @Override
     public final void connect() {
+        log.trace("Starting client");
 
         listener.onConnect();
 
@@ -91,6 +92,8 @@ public final class ReactorNettyTcpClient implements Client {
 
         connection.onDispose()
             .doOnTerminate(() -> listener.onClose());
+
+        log.trace("Stopping client");
     }
 
     @Override
