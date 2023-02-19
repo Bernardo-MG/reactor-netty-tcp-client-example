@@ -70,7 +70,9 @@ public final class ReactorNettyTcpClient implements Client {
     @Override
     public final void close() {
         log.trace("Stopping client");
-
+        
+        listener.onClose();
+        
         connection.dispose();
 
         log.trace("Stopped client");
@@ -90,9 +92,6 @@ public final class ReactorNettyTcpClient implements Client {
             .handle(this::handleRequest)
             .connectNow();
 
-        connection.onDispose()
-            .doOnTerminate(() -> listener.onClose());
-
         log.trace("Stopping client");
     }
 
@@ -109,7 +108,7 @@ public final class ReactorNettyTcpClient implements Client {
         connection.outbound()
             .sendString(dataStream)
             .then()
-            .subscribe(null, null, connection::dispose);
+            .subscribe();
     }
 
     private final void handleError(final Throwable ex) {
