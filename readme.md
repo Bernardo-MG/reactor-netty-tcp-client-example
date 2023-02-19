@@ -20,7 +20,9 @@ To show other commands:
 java -jar target/client.jar -h
 ```
 
-You can use this project along these others:
+This project is part of a series of examples:
+- [Netty TCP Client Example](https://github.com/Bernardo-MG/netty-tcp-client-example)
+- [Reactor Netty TCP Client Example](https://github.com/Bernardo-MG/reactor-netty-tcp-client-example)
 - [Netty TCP Server Example](https://github.com/Bernardo-MG/netty-tcp-server-example)
 - [Reactor Netty TCP Server Example](https://github.com/Bernardo-MG/reactor-netty-tcp-server-example)
 
@@ -32,7 +34,7 @@ You can use this project along these others:
 
 ## Features
 
-- Netty TCP client
+- Reactor Netty TCP client
 - Command Line Client
 
 ## References
