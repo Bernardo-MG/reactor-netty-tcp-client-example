@@ -87,7 +87,7 @@ public final class ReactorNettyTcpClient implements Client {
             .host(host)
             .port(port)
             .connectNow();
-        
+
         log.trace("Stopping client");
     }
 
@@ -97,25 +97,31 @@ public final class ReactorNettyTcpClient implements Client {
 
         log.debug("Sending message {}", message);
 
+        // Request data
         dataStream = Mono.just(message)
             .flux()
+            // Will send the response to the listener
             .doOnNext(s -> listener.onSend(s));
 
+        // Sends request
         connection.outbound()
             .sendString(dataStream)
             .then()
             .doOnError(this::handleError)
             .subscribe();
 
+        // Awaits for response
         connection.inbound()
             .receive()
             .doOnNext(next -> {
+                // Sends response to listener
                 final String msg;
 
                 msg = next.toString(CharsetUtil.UTF_8);
                 listener.onReceive(msg);
             })
-            .doOnError(this::handleError).blockFirst();
+            .doOnError(this::handleError)
+            .blockFirst();
     }
 
     /**
