@@ -95,12 +95,16 @@ public final class ReactorNettyTcpClient implements Client {
 
     @Override
     public final void request(final String message) {
+        final Publisher<? extends String> dataStream;
+
         log.debug("Sending message {}", message);
 
-        listener.onSend(message);
+        dataStream = Mono.just(message)
+            .flux()
+            .doOnNext(s -> listener.onSend(s));
 
         connection.outbound()
-            .sendString(Mono.just(message))
+            .sendString(dataStream)
             .then()
             .subscribe(null, null, connection::dispose);
     }
