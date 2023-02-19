@@ -18,13 +18,13 @@
    <!-- ********************************************** -->
 
    <groupId>com.bernardomg.example</groupId>
-   <artifactId>netty-tcp-client-example</artifactId>
-   <version>1.1.0-SNAPSHOT</version>
+   <artifactId>reactor-netty-tcp-client-example</artifactId>
+   <version>1.0.0</version>
    <packaging>jar</packaging>
 
-   <name>Netty TCP Client Example</name>
-   <description>An example setting up a Netty TCP client.</description>
-   <url>https://github.com/bernardo-mg/netty-tcp-client-example</url>
+   <name>Reactor Netty TCP Client Example</name>
+   <description>An example setting up a Reactor Netty TCP client.</description>
+   <url>https://github.com/bernardo-mg/reactor-netty-tcp-client-example</url>
    <inceptionYear>2023</inceptionYear>
 
    <licenses>
@@ -65,20 +65,20 @@
    <!-- ********************************************** -->
 
    <scm>
-      <connection>scm:git:https://github.com/bernardo-mg/netty-tcp-client-example.git</connection>
-      <developerConnection>scm:git:https://github.com/bernardo-mg/netty-tcp-client-example.git</developerConnection>
+      <connection>scm:git:https://github.com/bernardo-mg/reactor-netty-tcp-client-example.git</connection>
+      <developerConnection>scm:git:https://github.com/bernardo-mg/reactor-netty-tcp-client-example.git</developerConnection>
       <tag>head</tag>
-      <url>https://www.github.com/bernardo-mg/netty-tcp-client-example</url>
+      <url>https://www.github.com/bernardo-mg/reactor-netty-tcp-client-example</url>
    </scm>
 
    <issueManagement>
       <system>GitHub</system>
-      <url>https://www.github.com/bernardo-mg/netty-tcp-client-example/issues</url>
+      <url>https://www.github.com/bernardo-mg/reactor-netty-tcp-client-example/issues</url>
    </issueManagement>
 
    <ciManagement>
       <system>Github</system>
-      <url>https://www.github.com/bernardo-mg/netty-tcp-client-example/actions</url>
+      <url>https://www.github.com/bernardo-mg/reactor-netty-tcp-client-example/actions</url>
       <notifiers />
    </ciManagement>
 
@@ -119,10 +119,10 @@
       <!-- ============================================== -->
       <bernardomg.cli.manifestVersion>1.0.0</bernardomg.cli.manifestVersion>
       <junit.jupiter.version>5.9.2</junit.jupiter.version>
-      <netty.version>4.1.89.Final</netty.version>
       <log4j.version>2.19.0</log4j.version>
       <lombok.version>1.18.26</lombok.version>
       <picocli.version>4.7.1</picocli.version>
+      <reactor.version>2022.0.3</reactor.version>
       <slf4j.version>2.0.6</slf4j.version>
       <!-- ============================================== -->
       <!-- ============== PLUGINS VERSIONS ============== -->
@@ -154,6 +154,14 @@
 
    <dependencyManagement>
       <dependencies>
+        <dependency>
+            <!-- Reactor BOM -->
+            <groupId>io.projectreactor</groupId>
+            <artifactId>reactor-bom</artifactId>
+            <version>${reactor.version}</version> 
+            <type>pom</type>
+            <scope>import</scope>
+        </dependency>
          <dependency>
             <!-- JUnit BOM -->
             <groupId>org.junit</groupId>
@@ -195,9 +203,14 @@
       <!-- =================== NETTY ==================== -->
       <!-- ============================================== -->
       <dependency>
-         <groupId>io.netty</groupId>
-         <artifactId>netty-all</artifactId>
-         <version>${netty.version}</version>
+         <!-- Reactor Netty core -->
+         <groupId>io.projectreactor.netty</groupId>
+         <artifactId>reactor-netty-core</artifactId> 
+      </dependency>
+      <dependency>
+         <!-- Reactor Netty HTTP -->
+         <groupId>io.projectreactor.netty</groupId>
+         <artifactId>reactor-netty-http</artifactId>
       </dependency>
       <!-- ============================================== -->
       <!-- ================== LOGGERS =================== -->

@@ -27,11 +27,11 @@ package com.bernardomg.example.netty.tcp.cli.command;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 
-import com.bernardomg.example.netty.tcp.cli.CliWriterClientListener;
+import com.bernardomg.example.netty.tcp.cli.CliWriterTransactionListener;
 import com.bernardomg.example.netty.tcp.cli.version.ManifestVersionProvider;
 import com.bernardomg.example.netty.tcp.client.Client;
-import com.bernardomg.example.netty.tcp.client.ClientListener;
-import com.bernardomg.example.netty.tcp.client.NettyTcpClient;
+import com.bernardomg.example.netty.tcp.client.ReactorNettyTcpClient;
+import com.bernardomg.example.netty.tcp.client.TransactionListener;
 
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Model.CommandSpec;
@@ -89,9 +89,9 @@ public final class SendMessageCommand implements Runnable {
 
     @Override
     public final void run() {
-        final PrintWriter    writer;
-        final Client         client;
-        final ClientListener listener;
+        final PrintWriter         writer;
+        final Client              client;
+        final TransactionListener listener;
 
         if (verbose) {
             // Prints to console
@@ -103,8 +103,8 @@ public final class SendMessageCommand implements Runnable {
         }
 
         // Create client
-        listener = new CliWriterClientListener(host, port, writer);
-        client = new NettyTcpClient(host, port, listener);
+        listener = new CliWriterTransactionListener(host, port, writer);
+        client = new ReactorNettyTcpClient(host, port, listener);
         client.connect();
 
         // Send message

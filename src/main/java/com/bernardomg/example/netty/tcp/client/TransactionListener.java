@@ -24,36 +24,38 @@
 
 package com.bernardomg.example.netty.tcp.client;
 
-import java.util.Optional;
-
 /**
- * Client listener. Allows reacting to events related to the client.
+ * Transaction listener. Allows reacting to the events of a message transaction.
  *
- * @author Bernardo
+ * @author Bernardo Mart&iacute;nez Garrido
  *
  */
-public interface ClientListener {
+public interface TransactionListener {
 
     /**
-     * Reacts to the client closing the connection.
-     */
-    public void onClose();
-
-    /**
-     * Reacts to the client opening a connection.
-     */
-    public void onConnect();
-
-    /**
-     * Reacts to the client sending a request.
+     * Reacts to a message being received.
      *
-     * @param request
-     *            request sent
-     * @param response
-     *            response received
-     * @param success
-     *            success status
+     * @param message
+     *            message received
      */
-    public void onRequest(final String request, final Optional<String> response, final Boolean success);
+    public void onReceive(final String message);
+
+    /**
+     * Reacts to a message being sent.
+     *
+     * @param message
+     *            message sent
+     */
+    public void onSend(final String message);
+
+    /**
+     * Reacts to the start event.
+     */
+    public void onStart();
+
+    /**
+     * Reacts to the stop event.
+     */
+    public void onStop();
 
 }
