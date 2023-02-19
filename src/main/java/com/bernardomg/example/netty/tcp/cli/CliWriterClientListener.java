@@ -62,44 +62,33 @@ public final class CliWriterClientListener implements ClientListener {
 
     @Override
     public final void onClose() {
-        writer.println();
-        writer.println("------------");
         writer.println("Closing connection");
-        writer.println("------------");
     }
 
     @Override
     public final void onConnect() {
-        writer.println("------------");
         writer.printf("Opening connection to %s:%d", host, port);
         writer.println();
-        writer.println("------------");
     }
 
     @Override
     public final void onReceive(final String response) {
-        writer.println();
-        writer.println("------------");
         if (response.isEmpty()) {
             writer.println("Received no message");
         } else {
             writer.printf("Received message: %s", response);
             writer.println();
         }
-        writer.println("------------");
     }
 
     @Override
     public final void onSend(final String request) {
-        writer.println();
-        writer.println("------------");
         if (request.isEmpty()) {
             writer.println("Sent no message");
         } else {
             writer.printf("Sent message: %s", request);
             writer.println();
         }
-        writer.println("------------");
     }
 
 }
