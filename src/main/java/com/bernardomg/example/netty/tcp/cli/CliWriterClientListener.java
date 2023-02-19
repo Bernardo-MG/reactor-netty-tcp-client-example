@@ -26,7 +26,6 @@ package com.bernardomg.example.netty.tcp.cli;
 
 import java.io.PrintWriter;
 import java.util.Objects;
-import java.util.Optional;
 
 import com.bernardomg.example.netty.tcp.client.ClientListener;
 
@@ -77,26 +76,23 @@ public final class CliWriterClientListener implements ClientListener {
     }
 
     @Override
-    public final void onRequest(final String request, final Optional<String> response, final Boolean success) {
+    public final void onReceive(final String response) {
+        if (response.isEmpty()) {
+            writer.println("Received no response");
+        } else {
+            writer.printf("Received response: %s", response);
+            writer.println();
+        }
+    }
+
+    @Override
+    public final void onSend(final String request) {
         // Prints the final result
         writer.println();
         writer.println("------------");
         writer.printf("Sending message %s", request);
         writer.println();
         writer.println("------------");
-
-        if (success) {
-            writer.println("Sent message successfully");
-        } else {
-            writer.println("Failed sending message");
-        }
-
-        if (response.isEmpty()) {
-            writer.println("Received no response");
-        } else {
-            writer.printf("Received response: %s", response.get());
-            writer.println();
-        }
     }
 
 }

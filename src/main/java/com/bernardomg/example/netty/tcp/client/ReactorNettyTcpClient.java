@@ -25,7 +25,6 @@
 package com.bernardomg.example.netty.tcp.client;
 
 import java.util.Objects;
-import java.util.Optional;
 
 import org.reactivestreams.Publisher;
 
@@ -60,8 +59,6 @@ public final class ReactorNettyTcpClient implements Client {
      */
     private final Integer        port;
 
-    private Optional<String>     response = Optional.empty();
-
     public ReactorNettyTcpClient(final String hst, final Integer prt, final ClientListener lst) {
         super();
 
@@ -72,10 +69,11 @@ public final class ReactorNettyTcpClient implements Client {
 
     @Override
     public final void close() {
-        listener.onClose();
+        log.trace("Stopping client");
 
-        connection.onDispose()
-            .block();
+        connection.dispose();
+
+        log.trace("Stopped client");
     }
 
     @Override
@@ -90,18 +88,20 @@ public final class ReactorNettyTcpClient implements Client {
             // Adds request handler
             .handle(this::handleRequest)
             .connectNow();
+
+        connection.onDispose()
+            .doOnTerminate(() -> listener.onClose());
     }
 
     @Override
     public final void request(final String message) {
         log.debug("Sending message {}", message);
 
+        listener.onSend(message);
+
         connection.outbound()
             .sendString(Mono.just(message))
             .then()
-            .doOnNext(next -> {
-                listener.onRequest(message, response, true);
-            })
             .subscribe(null, null, connection::dispose);
     }
 
@@ -109,11 +109,13 @@ public final class ReactorNettyTcpClient implements Client {
         log.error(ex.getLocalizedMessage(), ex);
     }
 
-    private final Publisher<Void> handleRequest(final NettyInbound request, final NettyOutbound response) {
-        return request.receive()
+    private final Publisher<Void> handleRequest(final NettyInbound response, final NettyOutbound request) {
+        return response.receive()
             .doOnNext(next -> {
-                this.response = Optional.ofNullable(next.toString(CharsetUtil.UTF_8));
-                listener.onRequest("", this.response, true);
+                final String message;
+
+                message = next.toString(CharsetUtil.UTF_8);
+                listener.onReceive(message);
             })
             .doOnError(this::handleError)
             .then();

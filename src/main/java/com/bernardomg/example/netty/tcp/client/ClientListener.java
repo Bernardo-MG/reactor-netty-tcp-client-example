@@ -24,8 +24,6 @@
 
 package com.bernardomg.example.netty.tcp.client;
 
-import java.util.Optional;
-
 /**
  * Client listener. Allows reacting to events related to the client.
  *
@@ -45,15 +43,19 @@ public interface ClientListener {
     public void onConnect();
 
     /**
+     * Reacts to the client receiving a response.
+     *
+     * @param response
+     *            response received
+     */
+    public void onReceive(final String response);
+
+    /**
      * Reacts to the client sending a request.
      *
      * @param request
      *            request sent
-     * @param response
-     *            response received
-     * @param success
-     *            success status
      */
-    public void onRequest(final String request, final Optional<String> response, final Boolean success);
+    public void onSend(final String request);
 
 }
