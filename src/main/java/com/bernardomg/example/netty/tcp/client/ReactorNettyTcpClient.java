@@ -121,7 +121,7 @@ public final class ReactorNettyTcpClient implements Client {
                 listener.onReceive(msg);
             })
             .doOnError(this::handleError)
-            .blockFirst();
+            .subscribe();
     }
 
     /**

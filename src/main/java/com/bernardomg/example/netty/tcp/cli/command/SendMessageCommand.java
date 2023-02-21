@@ -26,6 +26,7 @@ package com.bernardomg.example.netty.tcp.cli.command;
 
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.util.concurrent.TimeUnit;
 
 import com.bernardomg.example.netty.tcp.cli.CliWriterTransactionListener;
 import com.bernardomg.example.netty.tcp.cli.version.ManifestVersionProvider;
@@ -33,7 +34,9 @@ import com.bernardomg.example.netty.tcp.client.Client;
 import com.bernardomg.example.netty.tcp.client.ReactorNettyTcpClient;
 import com.bernardomg.example.netty.tcp.client.TransactionListener;
 
+import lombok.extern.slf4j.Slf4j;
 import picocli.CommandLine.Command;
+import picocli.CommandLine.Help;
 import picocli.CommandLine.Model.CommandSpec;
 import picocli.CommandLine.Option;
 import picocli.CommandLine.Parameters;
@@ -47,24 +50,25 @@ import picocli.CommandLine.Spec;
  */
 @Command(name = "message", description = "Sends a TCP message", mixinStandardHelpOptions = true,
         versionProvider = ManifestVersionProvider.class)
+@Slf4j
 public final class SendMessageCommand implements Runnable {
 
     /**
      * Server host.
      */
-    @Parameters(index = "0", description = "Server host", paramLabel = "HOST")
+    @Parameters(index = "0", description = "Server host.", paramLabel = "HOST")
     private String      host;
 
     /**
      * Message to send.
      */
-    @Parameters(index = "2", description = "Message to send", paramLabel = "MSG")
+    @Parameters(index = "2", description = "Message to send.", paramLabel = "MSG")
     private String      message;
 
     /**
      * Server port.
      */
-    @Parameters(index = "1", description = "Server port", paramLabel = "PORT")
+    @Parameters(index = "1", description = "Server port.", paramLabel = "PORT")
     private Integer     port;
 
     /**
@@ -76,9 +80,16 @@ public final class SendMessageCommand implements Runnable {
     /**
      * Verbose mode. If active prints info into the console. Active by default.
      */
-    @Option(names = { "--verbose" }, paramLabel = "VERBOSE", description = "print information to console",
-            defaultValue = "true")
+    @Option(names = { "--verbose" }, paramLabel = "flag", description = "Print information to console.",
+            defaultValue = "true", showDefaultValue = Help.Visibility.ALWAYS)
     private Boolean     verbose;
+
+    /**
+     * Response wait time. This is the number of seconds to wait for responses.
+     */
+    @Option(names = { "--wait" }, paramLabel = "seconds", description = "Wait received seconds, to wait for responses.",
+            defaultValue = "2", showDefaultValue = Help.Visibility.ALWAYS)
+    private Integer     wait;
 
     /**
      * Default constructor.
@@ -109,6 +120,19 @@ public final class SendMessageCommand implements Runnable {
 
         // Send message
         client.request(message);
+
+        // Give time to the server for responses
+        log.debug("Waiting {} seconds for responses", wait);
+        writer.printf("Waiting %d seconds for responses", wait);
+        writer.println();
+        try {
+            TimeUnit.SECONDS.sleep(wait);
+        } catch (final InterruptedException e) {
+            log.error(e.getLocalizedMessage(), e);
+            throw new RuntimeException(e);
+        }
+        writer.println("finished waiting");
+        log.debug("Finished waiting for responses");
 
         // close client
         client.close();
