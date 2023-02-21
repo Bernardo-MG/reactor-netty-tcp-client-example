@@ -28,6 +28,8 @@ import java.util.Objects;
 
 import org.reactivestreams.Publisher;
 
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import io.netty.util.CharsetUtil;
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
@@ -95,6 +97,28 @@ public final class ReactorNettyTcpClient implements Client {
     }
 
     @Override
+    public final void request() {
+        final Publisher<? extends ByteBuf> dataStream;
+
+        log.debug("Sending empty message");
+
+        // Request data
+        dataStream = Mono.just(Unpooled.EMPTY_BUFFER)
+            .flux()
+            // Will send the response to the listener
+            .doOnNext(s -> listener.onSend(""));
+
+        // Sends request
+        connection.outbound()
+            .send(dataStream)
+            .then()
+            .doOnError(this::handleError)
+            .subscribe();
+
+        log.debug("Sent message");
+    }
+
+    @Override
     public final void request(final String message) {
         final Publisher<? extends String> dataStream;
 
@@ -112,6 +136,8 @@ public final class ReactorNettyTcpClient implements Client {
             .then()
             .doOnError(this::handleError)
             .subscribe();
+
+        log.debug("Sent message");
     }
 
     /**
