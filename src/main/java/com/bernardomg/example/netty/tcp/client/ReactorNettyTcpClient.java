@@ -86,6 +86,8 @@ public final class ReactorNettyTcpClient implements Client {
     public final void connect() {
         log.trace("Starting client");
 
+        log.debug("Connecting to {}:{}", host, port);
+
         listener.onStart();
 
         connection = TcpClient.create()
@@ -176,8 +178,7 @@ public final class ReactorNettyTcpClient implements Client {
         log.debug("Setting up response handler");
 
         // Receives the response
-        return request
-            .receive()
+        return request.receive()
             .doOnNext(next -> {
                 // Sends response to listener
                 final String msg;
