@@ -99,7 +99,9 @@ public final class ReactorNettyTcpClient implements Client {
             // Sets connection
             .host(host)
             .port(port)
+            // Adds handler
             .handle(this::handleResponse)
+            // Connect
             .connectNow();
 
         connection.addHandlerLast(new EventLoggerChannelHandler());
