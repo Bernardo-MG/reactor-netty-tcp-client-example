@@ -28,6 +28,8 @@ import java.util.Objects;
 
 import org.reactivestreams.Publisher;
 
+import com.bernardomg.example.netty.tcp.client.channel.EventLoggerChannelHandler;
+
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.util.CharsetUtil;
@@ -99,6 +101,8 @@ public final class ReactorNettyTcpClient implements Client {
             .port(port)
             .handle(this::handleResponse)
             .connectNow();
+
+        connection.addHandlerLast(new EventLoggerChannelHandler());
 
         log.trace("Stopping client");
     }
