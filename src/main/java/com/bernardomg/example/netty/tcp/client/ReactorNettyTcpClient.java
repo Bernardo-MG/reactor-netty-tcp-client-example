@@ -32,6 +32,8 @@ import io.netty.util.CharsetUtil;
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
 import reactor.netty.Connection;
+import reactor.netty.NettyInbound;
+import reactor.netty.NettyOutbound;
 import reactor.netty.tcp.TcpClient;
 
 /**
@@ -86,6 +88,7 @@ public final class ReactorNettyTcpClient implements Client {
             // Sets connection
             .host(host)
             .port(port)
+            .handle(this::handleResponse)
             .connectNow();
 
         log.trace("Stopping client");
@@ -109,19 +112,6 @@ public final class ReactorNettyTcpClient implements Client {
             .then()
             .doOnError(this::handleError)
             .subscribe();
-
-        // Awaits for response
-        connection.inbound()
-            .receive()
-            .doOnNext(next -> {
-                // Sends response to listener
-                final String msg;
-
-                msg = next.toString(CharsetUtil.UTF_8);
-                listener.onReceive(msg);
-            })
-            .doOnError(this::handleError)
-            .subscribe();
     }
 
     /**
@@ -132,6 +122,34 @@ public final class ReactorNettyTcpClient implements Client {
      */
     private final void handleError(final Throwable ex) {
         log.error(ex.getLocalizedMessage(), ex);
+    }
+
+    /**
+     * Request event listener. Will receive any response sent by the server, and then send it to the listener.
+     *
+     * @param request
+     *            request channel
+     * @param response
+     *            response channel
+     * @return a publisher which handles the request
+     */
+    private final Publisher<Void> handleResponse(final NettyInbound request, final NettyOutbound response) {
+        log.debug("Setting up response handler");
+
+        // Receives the response
+        return connection.inbound()
+            .receive()
+            .doOnNext(next -> {
+                // Sends response to listener
+                final String msg;
+
+                log.debug("Handling response");
+
+                msg = next.toString(CharsetUtil.UTF_8);
+                listener.onReceive(msg);
+            })
+            .doOnError(this::handleError)
+            .then();
     }
 
 }
