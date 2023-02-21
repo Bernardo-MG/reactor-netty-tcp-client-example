@@ -87,6 +87,13 @@ public final class ReactorNettyTcpClient implements Client {
         listener.onStart();
 
         connection = TcpClient.create()
+            // Logs events
+            .doOnChannelInit((o, c, a) -> log.debug("Channel init"))
+            .doOnConnect(c -> log.debug("Connect"))
+            .doOnConnected(c -> log.debug("Connected"))
+            .doOnDisconnected(c -> log.debug("Disconnected"))
+            .doOnResolve(c -> log.debug("Resolve"))
+            .doOnResolveError((c, t) -> log.debug("Resolve error"))
             // Sets connection
             .host(host)
             .port(port)
