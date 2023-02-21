@@ -174,7 +174,7 @@ public final class ReactorNettyTcpClient implements Client {
         log.debug("Setting up response handler");
 
         // Receives the response
-        return connection.inbound()
+        return request
             .receive()
             .doOnNext(next -> {
                 // Sends response to listener
