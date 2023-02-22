@@ -108,7 +108,7 @@ public final class ReactorNettyTcpClient implements Client {
 
         connection.addHandlerLast(new EventLoggerChannelHandler());
 
-        log.trace("Stopping client");
+        log.trace("Started client");
     }
 
     @Override
