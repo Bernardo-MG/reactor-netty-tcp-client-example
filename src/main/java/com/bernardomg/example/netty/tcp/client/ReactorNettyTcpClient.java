@@ -179,6 +179,7 @@ public final class ReactorNettyTcpClient implements Client {
 
         // Receives the response
         return request.receive()
+            // Log response
             .doOnNext(next -> {
                 // Sends response to listener
                 final String msg;
@@ -188,6 +189,7 @@ public final class ReactorNettyTcpClient implements Client {
                 msg = next.toString(CharsetUtil.UTF_8);
                 listener.onReceive(msg);
             })
+            // Error handling
             .doOnError(this::handleError)
             .then();
     }
