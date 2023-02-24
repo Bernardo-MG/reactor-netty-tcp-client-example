@@ -57,7 +57,7 @@ public final class CliWriterTransactionListener implements TransactionListener {
 
         port = Objects.requireNonNull(prt);
         host = Objects.requireNonNull(hst);
-        writer = new PrintWriter(wrt);
+        writer = Objects.requireNonNull(wrt);
     }
 
     @Override
