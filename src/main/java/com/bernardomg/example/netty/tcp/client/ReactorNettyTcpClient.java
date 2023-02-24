@@ -49,6 +49,9 @@ import reactor.netty.tcp.TcpClient;
 @Slf4j
 public final class ReactorNettyTcpClient implements Client {
 
+    /**
+     * Main connection. For sending messages and reacting to responses.
+     */
     private Connection                connection;
 
     /**
@@ -56,6 +59,9 @@ public final class ReactorNettyTcpClient implements Client {
      */
     private final String              host;
 
+    /**
+     * Transaction listener. Reacts to events during the request.
+     */
     private final TransactionListener listener;
 
     /**
