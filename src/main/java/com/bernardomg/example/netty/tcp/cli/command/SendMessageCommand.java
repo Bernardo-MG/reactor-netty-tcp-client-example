@@ -26,6 +26,7 @@ package com.bernardomg.example.netty.tcp.cli.command;
 
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.nio.charset.Charset;
 import java.util.concurrent.TimeUnit;
 
 import com.bernardomg.example.netty.tcp.cli.CliWriterTransactionListener;
@@ -110,7 +111,7 @@ public final class SendMessageCommand implements Runnable {
                 .getOut();
         } else {
             // Prints nothing
-            writer = new PrintWriter(OutputStream.nullOutputStream());
+            writer = new PrintWriter(OutputStream.nullOutputStream(), false, Charset.defaultCharset());
         }
 
         // Create client
@@ -136,6 +137,9 @@ public final class SendMessageCommand implements Runnable {
 
         // close client
         client.close();
+
+        // Close writer
+        writer.close();
     }
 
 }
