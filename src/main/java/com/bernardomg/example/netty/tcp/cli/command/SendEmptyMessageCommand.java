@@ -44,27 +44,21 @@ import picocli.CommandLine.Parameters;
 import picocli.CommandLine.Spec;
 
 /**
- * Send message command. Will send a message to the server through TCP.
+ * Send empty message command. Will send an empty message to the server through TCP.
  *
  * @author Bernardo Mart&iacute;nez Garrido
  *
  */
-@Command(name = "message", description = "Sends a TCP message", mixinStandardHelpOptions = true,
+@Command(name = "empty", description = "Sends an empty TCP message", mixinStandardHelpOptions = true,
         versionProvider = ManifestVersionProvider.class)
 @Slf4j
-public final class SendMessageCommand implements Runnable {
+public final class SendEmptyMessageCommand implements Runnable {
 
     /**
      * Server host.
      */
     @Parameters(index = "0", description = "Server host.", paramLabel = "HOST")
     private String      host;
-
-    /**
-     * Message to send.
-     */
-    @Parameters(index = "2", description = "Message to send.", paramLabel = "MSG")
-    private String      message;
 
     /**
      * Server port.
@@ -95,7 +89,7 @@ public final class SendMessageCommand implements Runnable {
     /**
      * Default constructor.
      */
-    public SendMessageCommand() {
+    public SendEmptyMessageCommand() {
         super();
     }
 
@@ -120,7 +114,7 @@ public final class SendMessageCommand implements Runnable {
         client.connect();
 
         // Send message
-        client.request(message);
+        client.request();
 
         // Give time to the server for responses
         log.debug("Waiting {} seconds for responses", wait);

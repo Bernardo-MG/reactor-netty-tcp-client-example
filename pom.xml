@@ -19,7 +19,7 @@
 
    <groupId>com.bernardomg.example</groupId>
    <artifactId>reactor-netty-tcp-client-example</artifactId>
-   <version>1.0.0</version>
+   <version>1.0.1</version>
    <packaging>jar</packaging>
 
    <name>Reactor Netty TCP Client Example</name>
@@ -113,7 +113,7 @@
       <!-- ============================================== -->
       <!-- =============== MANIFEST DATA ================ -->
       <!-- ============================================== -->
-      <manifest.name>com/bernardomg/example/netty/tcp</manifest.name>
+      <manifest.name>com/bernardomg/example/netty/reactor/tcp/client</manifest.name>
       <!-- ============================================== -->
       <!-- =========== DEPENDENCIES VERSIONS ============ -->
       <!-- ============================================== -->
@@ -374,18 +374,6 @@
    <reporting>
       <plugins>
          <plugin>
-            <!-- Javadoc -->
-            <!-- Generates the javadocs -->
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-javadoc-plugin</artifactId>
-            <configuration>
-               <sourceFileExcludes>
-                  <!-- Excludes generated code -->
-                  <exclude>**/generated/**/*</exclude>
-               </sourceFileExcludes>
-            </configuration>
-         </plugin>
-         <plugin>
             <!-- PMD -->
             <!-- Checks that the code complies with a series of code quality rules -->
             <groupId>org.apache.maven.plugins</groupId>
@@ -395,10 +383,6 @@
                   <!-- The customized rules file -->
                   <ruleset>${project.basedir}/src/config/pmd/pmd-rules.xml</ruleset>
                </rulesets>
-               <excludes>
-                  <!-- Excludes generated code -->
-                  <exclude>**/generated/**/*</exclude>
-               </excludes>
             </configuration>
          </plugin>
       </plugins>

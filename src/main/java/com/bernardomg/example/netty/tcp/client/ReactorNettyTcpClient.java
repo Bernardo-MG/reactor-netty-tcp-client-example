@@ -28,10 +28,16 @@ import java.util.Objects;
 
 import org.reactivestreams.Publisher;
 
+import com.bernardomg.example.netty.tcp.client.channel.EventLoggerChannelHandler;
+
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import io.netty.util.CharsetUtil;
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
 import reactor.netty.Connection;
+import reactor.netty.NettyInbound;
+import reactor.netty.NettyOutbound;
 import reactor.netty.tcp.TcpClient;
 
 /**
@@ -43,6 +49,9 @@ import reactor.netty.tcp.TcpClient;
 @Slf4j
 public final class ReactorNettyTcpClient implements Client {
 
+    /**
+     * Main connection. For sending messages and reacting to responses.
+     */
     private Connection                connection;
 
     /**
@@ -50,6 +59,9 @@ public final class ReactorNettyTcpClient implements Client {
      */
     private final String              host;
 
+    /**
+     * Transaction listener. Reacts to events during the request.
+     */
     private final TransactionListener listener;
 
     /**
@@ -80,15 +92,51 @@ public final class ReactorNettyTcpClient implements Client {
     public final void connect() {
         log.trace("Starting client");
 
+        log.debug("Connecting to {}:{}", host, port);
+
         listener.onStart();
 
         connection = TcpClient.create()
+            // Logs events
+            .doOnChannelInit((o, c, a) -> log.debug("Channel init"))
+            .doOnConnect(c -> log.debug("Connect"))
+            .doOnConnected(c -> log.debug("Connected"))
+            .doOnDisconnected(c -> log.debug("Disconnected"))
+            .doOnResolve(c -> log.debug("Resolve"))
+            .doOnResolveError((c, t) -> log.debug("Resolve error"))
             // Sets connection
             .host(host)
             .port(port)
+            // Adds handler
+            .handle(this::handleResponse)
+            // Connect
             .connectNow();
 
-        log.trace("Stopping client");
+        connection.addHandlerLast(new EventLoggerChannelHandler());
+
+        log.trace("Started client");
+    }
+
+    @Override
+    public final void request() {
+        final Publisher<? extends ByteBuf> dataStream;
+
+        log.debug("Sending empty message");
+
+        // Request data
+        dataStream = Mono.just(Unpooled.EMPTY_BUFFER)
+            .flux()
+            // Will send the response to the listener
+            .doOnNext(s -> listener.onSend(""));
+
+        // Sends request
+        connection.outbound()
+            .send(dataStream)
+            .then()
+            .doOnError(this::handleError)
+            .subscribe();
+
+        log.debug("Sent message");
     }
 
     @Override
@@ -110,18 +158,7 @@ public final class ReactorNettyTcpClient implements Client {
             .doOnError(this::handleError)
             .subscribe();
 
-        // Awaits for response
-        connection.inbound()
-            .receive()
-            .doOnNext(next -> {
-                // Sends response to listener
-                final String msg;
-
-                msg = next.toString(CharsetUtil.UTF_8);
-                listener.onReceive(msg);
-            })
-            .doOnError(this::handleError)
-            .blockFirst();
+        log.debug("Sent message");
     }
 
     /**
@@ -132,6 +169,35 @@ public final class ReactorNettyTcpClient implements Client {
      */
     private final void handleError(final Throwable ex) {
         log.error(ex.getLocalizedMessage(), ex);
+    }
+
+    /**
+     * Request event listener. Will receive any response sent by the server, and then send it to the listener.
+     *
+     * @param request
+     *            request channel
+     * @param response
+     *            response channel
+     * @return a publisher which handles the request
+     */
+    private final Publisher<Void> handleResponse(final NettyInbound request, final NettyOutbound response) {
+        log.debug("Setting up response handler");
+
+        // Receives the response
+        return request.receive()
+            // Log response
+            .doOnNext(next -> {
+                // Sends response to listener
+                final String msg;
+
+                log.debug("Handling response");
+
+                msg = next.toString(CharsetUtil.UTF_8);
+                listener.onReceive(msg);
+            })
+            // Error handling
+            .doOnError(this::handleError)
+            .then();
     }
 
 }
