@@ -18,5 +18,7 @@
                 Using waiter instead of blocking until a response arrives.
             </action>
         </release>
+        <release version="1.1.0" date="2023-02-24" description="">
+        </release>
     </body>
 </document>
