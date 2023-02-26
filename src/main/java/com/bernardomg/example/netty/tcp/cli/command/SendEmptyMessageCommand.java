@@ -88,7 +88,7 @@ public final class SendEmptyMessageCommand implements Runnable {
     /**
      * Response wait time. This is the number of seconds to wait for responses.
      */
-    @Option(names = { "--wiretap" }, paramLabel = "flag", description = "Enable wiretap logging",
+    @Option(names = { "--wiretap" }, paramLabel = "flag", description = "Enable wiretap logging.",
             defaultValue = "false")
     private Boolean     wiretap;
 
