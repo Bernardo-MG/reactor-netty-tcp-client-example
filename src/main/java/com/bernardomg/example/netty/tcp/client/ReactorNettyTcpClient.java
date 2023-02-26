@@ -69,6 +69,11 @@ public final class ReactorNettyTcpClient implements Client {
      */
     private final Integer             port;
 
+    /**
+     * Wiretap flag.
+     */
+    private Boolean                   wiretap = false;
+
     public ReactorNettyTcpClient(final String hst, final Integer prt, final TransactionListener lst) {
         super();
 
@@ -104,6 +109,8 @@ public final class ReactorNettyTcpClient implements Client {
             .doOnDisconnected(c -> log.debug("Disconnected"))
             .doOnResolve(c -> log.debug("Resolve"))
             .doOnResolveError((c, t) -> log.debug("Resolve error"))
+            // Wiretap
+            .wiretap(wiretap)
             // Sets connection
             .host(host)
             .port(port)
@@ -159,6 +166,10 @@ public final class ReactorNettyTcpClient implements Client {
             .subscribe();
 
         log.debug("Sent message");
+    }
+
+    public final void setWiretap(final Boolean wtap) {
+        wiretap = wtap;
     }
 
     /**

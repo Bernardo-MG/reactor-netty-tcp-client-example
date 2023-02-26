@@ -31,7 +31,6 @@ import java.util.concurrent.TimeUnit;
 
 import com.bernardomg.example.netty.tcp.cli.CliWriterTransactionListener;
 import com.bernardomg.example.netty.tcp.cli.version.ManifestVersionProvider;
-import com.bernardomg.example.netty.tcp.client.Client;
 import com.bernardomg.example.netty.tcp.client.ReactorNettyTcpClient;
 import com.bernardomg.example.netty.tcp.client.TransactionListener;
 
@@ -93,6 +92,13 @@ public final class SendMessageCommand implements Runnable {
     private Integer     wait;
 
     /**
+     * Response wait time. This is the number of seconds to wait for responses.
+     */
+    @Option(names = { "--wiretap" }, paramLabel = "flag", description = "Enable wiretap logging",
+            defaultValue = "false")
+    private Boolean     wiretap;
+
+    /**
      * Default constructor.
      */
     public SendMessageCommand() {
@@ -101,9 +107,9 @@ public final class SendMessageCommand implements Runnable {
 
     @Override
     public final void run() {
-        final PrintWriter         writer;
-        final Client              client;
-        final TransactionListener listener;
+        final PrintWriter           writer;
+        final ReactorNettyTcpClient client;
+        final TransactionListener   listener;
 
         if (verbose) {
             // Prints to console
@@ -117,6 +123,8 @@ public final class SendMessageCommand implements Runnable {
         // Create client
         listener = new CliWriterTransactionListener(host, port, writer);
         client = new ReactorNettyTcpClient(host, port, listener);
+        client.setWiretap(wiretap);
+
         client.connect();
 
         // Send message
