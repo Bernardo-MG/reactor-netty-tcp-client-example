@@ -125,7 +125,6 @@ public final class ReactorNettyTcpClient implements Client {
         connection.outbound()
             .sendString(dataStream)
             .then()
-            .doOnError(this::handleError)
             .subscribe();
     }
 
@@ -142,7 +141,6 @@ public final class ReactorNettyTcpClient implements Client {
         connection.outbound()
             .sendString(dataStream)
             .then()
-            .doOnError(this::handleError)
             .subscribe();
     }
 
@@ -154,16 +152,6 @@ public final class ReactorNettyTcpClient implements Client {
                 // Sends the request to the listener
                 listener.onSend(r);
             });
-    }
-
-    /**
-     * Error handler which sends errors to the log.
-     *
-     * @param ex
-     *            exception to log
-     */
-    private final void handleError(final Throwable ex) {
-        log.error(ex.getLocalizedMessage(), ex);
     }
 
 }
