@@ -30,9 +30,6 @@ import org.reactivestreams.Publisher;
 
 import com.bernardomg.example.netty.tcp.client.channel.EventLoggerChannelHandler;
 
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
-import io.netty.util.CharsetUtil;
 import lombok.NonNull;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -106,13 +103,6 @@ public final class ReactorNettyTcpClient implements Client {
         listener.onStart();
 
         connection = TcpClient.create()
-            // Logs events
-            .doOnChannelInit((o, c, a) -> log.debug("Channel init"))
-            .doOnConnect(c -> log.debug("Connect"))
-            .doOnConnected(c -> log.debug("Connected"))
-            .doOnDisconnected(c -> log.debug("Disconnected"))
-            .doOnResolve(c -> log.debug("Resolve"))
-            .doOnResolveError((c, t) -> log.debug("Resolve error"))
             // Wiretap
             .wiretap(wiretap)
             // Sets connection
@@ -130,19 +120,16 @@ public final class ReactorNettyTcpClient implements Client {
 
     @Override
     public final void request() {
-        final Publisher<? extends ByteBuf> dataStream;
+        final Publisher<? extends String> dataStream;
 
         log.debug("Sending empty message");
 
         // Request data
-        dataStream = Mono.just(Unpooled.EMPTY_BUFFER)
-            .flux()
-            // Will send the response to the listener
-            .doOnNext(s -> listener.onSend(""));
+        dataStream = buildStream("");
 
         // Sends request
         connection.outbound()
-            .send(dataStream)
+            .sendString(dataStream)
             .then()
             .doOnError(this::handleError)
             .subscribe();
@@ -154,13 +141,8 @@ public final class ReactorNettyTcpClient implements Client {
     public final void request(final String message) {
         final Publisher<? extends String> dataStream;
 
-        log.debug("Sending message {}", message);
-
         // Request data
-        dataStream = Mono.just(message)
-            .flux()
-            // Will send the response to the listener
-            .doOnNext(s -> listener.onSend(s));
+        dataStream = buildStream(message);
 
         // Sends request
         connection.outbound()
@@ -170,6 +152,18 @@ public final class ReactorNettyTcpClient implements Client {
             .subscribe();
 
         log.debug("Sent message");
+    }
+
+    private final Publisher<? extends String> buildStream(final String message) {
+        return Mono.just(message)
+            .flux()
+            // Will send the response to the listener
+            .doOnNext(r -> {
+                log.debug("Sending request: {}", r);
+
+                // Sends the request to the listener
+                listener.onSend(r);
+            });
     }
 
     /**
@@ -196,15 +190,14 @@ public final class ReactorNettyTcpClient implements Client {
 
         // Receives the response
         return request.receive()
+            .asString()
             // Log response
             .doOnNext(next -> {
                 // Sends response to listener
-                final String msg;
 
                 log.debug("Handling response");
 
-                msg = next.toString(CharsetUtil.UTF_8);
-                listener.onReceive(msg);
+                listener.onReceive(next);
             })
             // Error handling
             .doOnError(this::handleError)
