@@ -43,7 +43,7 @@ import picocli.CommandLine.Parameters;
 import picocli.CommandLine.Spec;
 
 /**
- * Send multiple message command. Will send multiple messages to the server through TCP.
+ * Send multiple messages command. Will send multiple messages to the server through TCP.
  *
  * @author Bernardo Mart&iacute;nez Garrido
  *
