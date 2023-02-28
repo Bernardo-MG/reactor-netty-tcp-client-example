@@ -125,6 +125,7 @@ public final class ReactorNettyTcpClient implements Client {
         connection.outbound()
             .sendString(dataStream)
             .then()
+            // Subscribe to run
             .subscribe();
     }
 
@@ -141,6 +142,7 @@ public final class ReactorNettyTcpClient implements Client {
         connection.outbound()
             .sendString(dataStream)
             .then()
+            // Subscribe to run
             .subscribe();
     }
 
