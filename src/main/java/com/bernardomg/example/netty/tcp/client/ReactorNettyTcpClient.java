@@ -33,6 +33,8 @@ import com.bernardomg.example.netty.tcp.client.channel.EventLoggerChannelHandler
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.util.CharsetUtil;
+import lombok.NonNull;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
 import reactor.netty.Connection;
@@ -72,6 +74,8 @@ public final class ReactorNettyTcpClient implements Client {
     /**
      * Wiretap flag.
      */
+    @Setter
+    @NonNull
     private Boolean                   wiretap = false;
 
     public ReactorNettyTcpClient(final String hst, final Integer prt, final TransactionListener lst) {
@@ -166,10 +170,6 @@ public final class ReactorNettyTcpClient implements Client {
             .subscribe();
 
         log.debug("Sent message");
-    }
-
-    public final void setWiretap(final Boolean wtap) {
-        wiretap = wtap;
     }
 
     /**
