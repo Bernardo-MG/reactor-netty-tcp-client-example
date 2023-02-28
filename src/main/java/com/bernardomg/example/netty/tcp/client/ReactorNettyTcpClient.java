@@ -129,13 +129,13 @@ public final class ReactorNettyTcpClient implements Client {
             .then()
             .doOnError(this::handleError)
             .subscribe();
-
-        log.debug("Sent message");
     }
 
     @Override
     public final void request(final String message) {
         final Publisher<? extends String> dataStream;
+
+        log.debug("Sending {}",message);
 
         // Request data
         dataStream = buildStream(message);
@@ -146,8 +146,6 @@ public final class ReactorNettyTcpClient implements Client {
             .then()
             .doOnError(this::handleError)
             .subscribe();
-
-        log.debug("Sent message");
     }
 
     private final Publisher<? extends String> buildStream(final String message) {
@@ -155,8 +153,6 @@ public final class ReactorNettyTcpClient implements Client {
             .flux()
             // Will send the response to the listener
             .doOnNext(r -> {
-                log.debug("Sending request: {}", r);
-
                 // Sends the request to the listener
                 listener.onSend(r);
             });
@@ -182,17 +178,12 @@ public final class ReactorNettyTcpClient implements Client {
      * @return a publisher which handles the request
      */
     private final Publisher<Void> handleResponse(final NettyInbound request, final NettyOutbound response) {
-        log.debug("Setting up response handler");
-
         // Receives the response
         return request.receive()
             .asString()
             // Log response
             .doOnNext(next -> {
                 // Sends response to listener
-
-                log.debug("Handling response");
-
                 listener.onReceive(next);
             })
             // Error handling
