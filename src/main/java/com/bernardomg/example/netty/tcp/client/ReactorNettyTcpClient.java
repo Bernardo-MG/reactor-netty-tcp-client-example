@@ -33,8 +33,6 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
 import reactor.netty.Connection;
-import reactor.netty.NettyInbound;
-import reactor.netty.NettyOutbound;
 import reactor.netty.tcp.TcpClient;
 
 /**
@@ -107,7 +105,7 @@ public final class ReactorNettyTcpClient implements Client {
             .host(host)
             .port(port)
             // Adds handler
-            .handle(this::handleResponse)
+            .handle(new InboundToListenerTransactionHandler(listener))
             // Connect
             .connectNow();
 
@@ -135,7 +133,7 @@ public final class ReactorNettyTcpClient implements Client {
     public final void request(final String message) {
         final Publisher<? extends String> dataStream;
 
-        log.debug("Sending {}",message);
+        log.debug("Sending {}", message);
 
         // Request data
         dataStream = buildStream(message);
@@ -166,29 +164,6 @@ public final class ReactorNettyTcpClient implements Client {
      */
     private final void handleError(final Throwable ex) {
         log.error(ex.getLocalizedMessage(), ex);
-    }
-
-    /**
-     * Request event listener. Will receive any response sent by the server, and then send it to the listener.
-     *
-     * @param request
-     *            request channel
-     * @param response
-     *            response channel
-     * @return a publisher which handles the request
-     */
-    private final Publisher<Void> handleResponse(final NettyInbound request, final NettyOutbound response) {
-        // Receives the response
-        return request.receive()
-            .asString()
-            // Log response
-            .doOnNext(next -> {
-                // Sends response to listener
-                listener.onReceive(next);
-            })
-            // Error handling
-            .doOnError(this::handleError)
-            .then();
     }
 
 }
