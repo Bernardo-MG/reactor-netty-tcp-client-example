@@ -28,8 +28,6 @@ import java.util.Objects;
 
 import org.reactivestreams.Publisher;
 
-import com.bernardomg.example.netty.tcp.client.channel.EventLoggerChannelHandler;
-
 import lombok.NonNull;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -112,8 +110,6 @@ public final class ReactorNettyTcpClient implements Client {
             .handle(this::handleResponse)
             // Connect
             .connectNow();
-
-        connection.addHandlerLast(new EventLoggerChannelHandler());
 
         log.trace("Started client");
     }
