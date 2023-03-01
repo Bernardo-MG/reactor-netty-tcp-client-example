@@ -25,6 +25,7 @@
 package com.bernardomg.example.netty.tcp.client;
 
 import java.util.Objects;
+import java.util.function.BiFunction;
 
 import org.reactivestreams.Publisher;
 
@@ -33,6 +34,8 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
 import reactor.netty.Connection;
+import reactor.netty.NettyInbound;
+import reactor.netty.NettyOutbound;
 import reactor.netty.tcp.TcpClient;
 
 /**
@@ -47,29 +50,34 @@ public final class ReactorNettyTcpClient implements Client {
     /**
      * Main connection. For sending messages and reacting to responses.
      */
-    private Connection                connection;
+    private Connection                                                     connection;
+
+    /**
+     * IO handler for the client.
+     */
+    private final BiFunction<NettyInbound, NettyOutbound, Publisher<Void>> handler;
 
     /**
      * Host for the server to which this client will connect.
      */
-    private final String              host;
+    private final String                                                   host;
 
     /**
      * Transaction listener. Reacts to events during the request.
      */
-    private final TransactionListener listener;
+    private final TransactionListener                                      listener;
 
     /**
      * Port for the server to which this client will connect.
      */
-    private final Integer             port;
+    private final Integer                                                  port;
 
     /**
      * Wiretap flag.
      */
     @Setter
     @NonNull
-    private Boolean                   wiretap = false;
+    private Boolean                                                        wiretap = false;
 
     public ReactorNettyTcpClient(final String hst, final Integer prt, final TransactionListener lst) {
         super();
@@ -77,6 +85,8 @@ public final class ReactorNettyTcpClient implements Client {
         port = Objects.requireNonNull(prt);
         host = Objects.requireNonNull(hst);
         listener = Objects.requireNonNull(lst);
+
+        handler = new InboundToListenerIoHandler(listener);
     }
 
     @Override
@@ -105,7 +115,7 @@ public final class ReactorNettyTcpClient implements Client {
             .host(host)
             .port(port)
             // Adds handler
-            .handle(new InboundToListenerTransactionHandler(listener))
+            .handle(handler)
             // Connect
             .connectNow();
 
