@@ -124,7 +124,7 @@ public final class ReactorNettyTcpClient implements Client {
 
     @Override
     public final void request() {
-        final Publisher<? extends String> dataStream;
+        final Publisher<String> dataStream;
 
         log.debug("Sending empty message");
 
@@ -141,7 +141,7 @@ public final class ReactorNettyTcpClient implements Client {
 
     @Override
     public final void request(final String message) {
-        final Publisher<? extends String> dataStream;
+        final Publisher<String> dataStream;
 
         log.debug("Sending {}", message);
 
@@ -156,7 +156,7 @@ public final class ReactorNettyTcpClient implements Client {
             .subscribe();
     }
 
-    private final Publisher<? extends String> buildStream(final String message) {
+    private final Publisher<String> buildStream(final String message) {
         return Mono.just(message)
             .flux()
             .doOnNext(listener::onSend);
