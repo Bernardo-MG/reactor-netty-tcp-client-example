@@ -114,7 +114,7 @@ public final class SendMessageCommand implements Runnable {
         final TransactionListener   listener;
 
         if (debug) {
-            activateLog();
+            activateDebugLog();
         }
 
         if (verbose) {
@@ -156,7 +156,10 @@ public final class SendMessageCommand implements Runnable {
         writer.close();
     }
 
-    private final void activateLog() {
+    /**
+     * Activates debug logs for the application.
+     */
+    private final void activateDebugLog() {
         Configurator.setLevel("com.bernardomg.example", Level.DEBUG);
         Configurator.setLevel("reactor.netty.tcp", Level.DEBUG);
     }
