@@ -159,10 +159,7 @@ public final class ReactorNettyTcpClient implements Client {
     private final Publisher<? extends String> buildStream(final String message) {
         return Mono.just(message)
             .flux()
-            .doOnNext(m -> {
-                // Sends the message to the listener
-                listener.onSend(m);
-            });
+            .doOnNext(listener::onSend);
     }
 
 }
