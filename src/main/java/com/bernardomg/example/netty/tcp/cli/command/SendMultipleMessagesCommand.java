@@ -141,7 +141,7 @@ public final class SendMultipleMessagesCommand implements Runnable {
         writer.println("finished waiting");
         log.debug("Finished waiting for responses");
 
-        // close client
+        // Close client
         client.close();
 
         // Close writer
