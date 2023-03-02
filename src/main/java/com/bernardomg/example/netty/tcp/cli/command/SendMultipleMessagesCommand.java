@@ -162,6 +162,9 @@ public final class SendMultipleMessagesCommand implements Runnable {
         Configurator.setLevel("reactor.netty.tcp", Level.DEBUG);
     }
 
+    /**
+     * Wait for one second.
+     */
     private final void waitOneSec() {
         try {
             TimeUnit.SECONDS.sleep(1);
