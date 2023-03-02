@@ -29,6 +29,9 @@ import java.io.PrintWriter;
 import java.nio.charset.Charset;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.core.config.Configurator;
+
 import com.bernardomg.example.netty.tcp.cli.CliWriterTransactionListener;
 import com.bernardomg.example.netty.tcp.cli.version.ManifestVersionProvider;
 import com.bernardomg.example.netty.tcp.client.ReactorNettyTcpClient;
@@ -52,6 +55,12 @@ import picocli.CommandLine.Spec;
         versionProvider = ManifestVersionProvider.class)
 @Slf4j
 public final class SendMessageCommand implements Runnable {
+
+    /**
+     * Debug flag. Shows debug logs.
+     */
+    @Option(names = { "--debug" }, paramLabel = "flag", description = "Enable debug logs.", defaultValue = "false")
+    private Boolean     debug;
 
     /**
      * Server host.
@@ -92,13 +101,6 @@ public final class SendMessageCommand implements Runnable {
     private Integer     wait;
 
     /**
-     * Response wait time. This is the number of seconds to wait for responses.
-     */
-    @Option(names = { "--wiretap" }, paramLabel = "flag", description = "Enable wiretap logging",
-            defaultValue = "false")
-    private Boolean     wiretap;
-
-    /**
      * Default constructor.
      */
     public SendMessageCommand() {
@@ -110,6 +112,10 @@ public final class SendMessageCommand implements Runnable {
         final PrintWriter           writer;
         final ReactorNettyTcpClient client;
         final TransactionListener   listener;
+
+        if (debug) {
+            activateLog();
+        }
 
         if (verbose) {
             // Prints to console
@@ -123,7 +129,7 @@ public final class SendMessageCommand implements Runnable {
         // Create client
         listener = new CliWriterTransactionListener(host, port, writer);
         client = new ReactorNettyTcpClient(host, port, listener);
-        client.setWiretap(wiretap);
+        client.setWiretap(debug);
 
         client.connect();
 
@@ -148,6 +154,11 @@ public final class SendMessageCommand implements Runnable {
 
         // Close writer
         writer.close();
+    }
+
+    private final void activateLog() {
+        Configurator.setLevel("com.bernardomg.example", Level.DEBUG);
+        Configurator.setLevel("reactor.netty.tcp", Level.DEBUG);
     }
 
 }
