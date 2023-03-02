@@ -29,7 +29,6 @@ import java.util.function.BiFunction;
 
 import org.reactivestreams.Publisher;
 
-import lombok.extern.slf4j.Slf4j;
 import reactor.netty.NettyInbound;
 import reactor.netty.NettyOutbound;
 
@@ -39,7 +38,6 @@ import reactor.netty.NettyOutbound;
  * @author Bernardo Mart&iacute;nez Garrido
  *
  */
-@Slf4j
 public final class InboundToListenerIoHandler implements BiFunction<NettyInbound, NettyOutbound, Publisher<Void>> {
 
     /**
@@ -58,24 +56,9 @@ public final class InboundToListenerIoHandler implements BiFunction<NettyInbound
         // Receives the response
         return request.receive()
             .asString()
-            // Log response
-            .doOnNext(next -> {
-                // Sends response to listener
-                listener.onReceive(next);
-            })
-            // Error handling
-            .doOnError(this::handleError)
+            // Sends request to listener
+            .doOnNext(listener::onReceive)
             .then();
-    }
-
-    /**
-     * Error handler which sends errors to the log.
-     *
-     * @param ex
-     *            exception to log
-     */
-    private final void handleError(final Throwable ex) {
-        log.error(ex.getLocalizedMessage(), ex);
     }
 
 }
