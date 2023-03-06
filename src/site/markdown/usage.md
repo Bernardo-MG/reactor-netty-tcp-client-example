@@ -4,19 +4,7 @@ Once built, the JAR will be located at target/client.jar. These examples will us
 
 ## Commands
 
-### Help
-
-The CLI includes a help option, which shows commands:
-
-```
-java -jar target/client.jar -h
-```
-
-This extends to the commands, showing arguments and options:
-
-```
-java -jar target/client.jar message -h
-```
+This includes details on all the messages sent or received.
 
 ### Single Message
 
@@ -40,4 +28,26 @@ To send several consecutive messages to localhost:8080:
 
 ```
 java -jar target/client.jar multiple localhost 8080
+```
+
+## Help
+
+The CLI includes a help option, which shows commands:
+
+```
+java -jar target/client.jar -h
+```
+
+This extends to the commands, showing arguments and options:
+
+```
+java -jar target/client.jar message -h
+```
+
+## Debug
+
+All the commands have a debug option, which prints logs on console:
+
+```
+java -jar target/client.jar message localhost 8080 Hello --debug
 ```
