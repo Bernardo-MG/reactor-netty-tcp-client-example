@@ -29,9 +29,11 @@ import java.io.PrintWriter;
 import java.nio.charset.Charset;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.core.config.Configurator;
+
 import com.bernardomg.example.netty.tcp.cli.CliWriterTransactionListener;
 import com.bernardomg.example.netty.tcp.cli.version.ManifestVersionProvider;
-import com.bernardomg.example.netty.tcp.client.Client;
 import com.bernardomg.example.netty.tcp.client.ReactorNettyTcpClient;
 import com.bernardomg.example.netty.tcp.client.TransactionListener;
 
@@ -53,6 +55,12 @@ import picocli.CommandLine.Spec;
         versionProvider = ManifestVersionProvider.class)
 @Slf4j
 public final class SendEmptyMessageCommand implements Runnable {
+
+    /**
+     * Debug flag. Shows debug logs.
+     */
+    @Option(names = { "--debug" }, paramLabel = "flag", description = "Enable debug logs.", defaultValue = "false")
+    private Boolean     debug;
 
     /**
      * Server host.
@@ -95,9 +103,13 @@ public final class SendEmptyMessageCommand implements Runnable {
 
     @Override
     public final void run() {
-        final PrintWriter         writer;
-        final Client              client;
-        final TransactionListener listener;
+        final PrintWriter           writer;
+        final ReactorNettyTcpClient client;
+        final TransactionListener   listener;
+
+        if (debug) {
+            activateDebugLog();
+        }
 
         if (verbose) {
             // Prints to console
@@ -111,6 +123,8 @@ public final class SendEmptyMessageCommand implements Runnable {
         // Create client
         listener = new CliWriterTransactionListener(host, port, writer);
         client = new ReactorNettyTcpClient(host, port, listener);
+        client.setWiretap(debug);
+
         client.connect();
 
         // Send message
@@ -129,11 +143,19 @@ public final class SendEmptyMessageCommand implements Runnable {
         writer.println("finished waiting");
         log.debug("Finished waiting for responses");
 
-        // close client
+        // Close client
         client.close();
 
         // Close writer
         writer.close();
+    }
+
+    /**
+     * Activates debug logs for the application.
+     */
+    private final void activateDebugLog() {
+        Configurator.setLevel("com.bernardomg.example", Level.DEBUG);
+        Configurator.setLevel("reactor.netty.tcp", Level.DEBUG);
     }
 
 }

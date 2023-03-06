@@ -26,6 +26,10 @@ This project is part of a series of examples:
 - [Netty TCP Server Example](https://github.com/Bernardo-MG/netty-tcp-server-example)
 - [Reactor Netty TCP Server Example](https://github.com/Bernardo-MG/reactor-netty-tcp-server-example)
 
+But there are more Netty examples:
+- [Netty TCP Proxy Example](https://github.com/Bernardo-MG/netty-tcp-proxy-example)
+- [Reactor Netty TCP Proxy Example](https://github.com/Bernardo-MG/reactor-netty-tcp-proxy-example)
+
 [![Release docs](https://img.shields.io/badge/docs-release-blue.svg)][site-release]
 [![Development docs](https://img.shields.io/badge/docs-develop-blue.svg)][site-develop]
 

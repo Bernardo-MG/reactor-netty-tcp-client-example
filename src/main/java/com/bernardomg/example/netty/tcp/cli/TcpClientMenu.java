@@ -26,6 +26,7 @@ package com.bernardomg.example.netty.tcp.cli;
 
 import com.bernardomg.example.netty.tcp.cli.command.SendEmptyMessageCommand;
 import com.bernardomg.example.netty.tcp.cli.command.SendMessageCommand;
+import com.bernardomg.example.netty.tcp.cli.command.SendMultipleMessagesCommand;
 import com.bernardomg.example.netty.tcp.cli.version.ManifestVersionProvider;
 
 import picocli.CommandLine.Command;
@@ -36,7 +37,8 @@ import picocli.CommandLine.Command;
  * @author Bernardo Mart&iacute;nez Garrido
  *
  */
-@Command(description = "TCP client", subcommands = { SendMessageCommand.class, SendEmptyMessageCommand.class },
+@Command(description = "TCP client",
+        subcommands = { SendMessageCommand.class, SendEmptyMessageCommand.class, SendMultipleMessagesCommand.class },
         mixinStandardHelpOptions = true, versionProvider = ManifestVersionProvider.class)
 public class TcpClientMenu {
 

@@ -21,8 +21,44 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-/**
- * Channel components.
- */
 
-package com.bernardomg.example.netty.tcp.client.channel;
+package com.bernardomg.example.netty.tcp.client;
+
+import java.util.Objects;
+import java.util.function.BiFunction;
+
+import org.reactivestreams.Publisher;
+
+import reactor.netty.NettyInbound;
+import reactor.netty.NettyOutbound;
+
+/**
+ * I/O handler which sends any received message to the listener.
+ *
+ * @author Bernardo Mart&iacute;nez Garrido
+ *
+ */
+public final class InboundToListenerIoHandler implements BiFunction<NettyInbound, NettyOutbound, Publisher<Void>> {
+
+    /**
+     * Transaction listener. Reacts to events during the request.
+     */
+    private final TransactionListener listener;
+
+    public InboundToListenerIoHandler(final TransactionListener lst) {
+        super();
+
+        listener = Objects.requireNonNull(lst);
+    }
+
+    @Override
+    public Publisher<Void> apply(final NettyInbound request, final NettyOutbound response) {
+        // Receives the response
+        return request.receive()
+            .asString()
+            // Sends request to listener
+            .doOnNext(listener::onReceive)
+            .then();
+    }
+
+}

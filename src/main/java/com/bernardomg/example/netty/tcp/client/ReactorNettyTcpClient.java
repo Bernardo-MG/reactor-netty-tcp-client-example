@@ -25,14 +25,12 @@
 package com.bernardomg.example.netty.tcp.client;
 
 import java.util.Objects;
+import java.util.function.BiFunction;
 
 import org.reactivestreams.Publisher;
 
-import com.bernardomg.example.netty.tcp.client.channel.EventLoggerChannelHandler;
-
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
-import io.netty.util.CharsetUtil;
+import lombok.NonNull;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
 import reactor.netty.Connection;
@@ -52,22 +50,34 @@ public final class ReactorNettyTcpClient implements Client {
     /**
      * Main connection. For sending messages and reacting to responses.
      */
-    private Connection                connection;
+    private Connection                                                     connection;
+
+    /**
+     * IO handler for the client.
+     */
+    private final BiFunction<NettyInbound, NettyOutbound, Publisher<Void>> handler;
 
     /**
      * Host for the server to which this client will connect.
      */
-    private final String              host;
+    private final String                                                   host;
 
     /**
      * Transaction listener. Reacts to events during the request.
      */
-    private final TransactionListener listener;
+    private final TransactionListener                                      listener;
 
     /**
      * Port for the server to which this client will connect.
      */
-    private final Integer             port;
+    private final Integer                                                  port;
+
+    /**
+     * Wiretap flag.
+     */
+    @Setter
+    @NonNull
+    private Boolean                                                        wiretap = false;
 
     public ReactorNettyTcpClient(final String hst, final Integer prt, final TransactionListener lst) {
         super();
@@ -75,6 +85,8 @@ public final class ReactorNettyTcpClient implements Client {
         port = Objects.requireNonNull(prt);
         host = Objects.requireNonNull(hst);
         listener = Objects.requireNonNull(lst);
+
+        handler = new InboundToListenerIoHandler(listener);
     }
 
     @Override
@@ -97,107 +109,57 @@ public final class ReactorNettyTcpClient implements Client {
         listener.onStart();
 
         connection = TcpClient.create()
-            // Logs events
-            .doOnChannelInit((o, c, a) -> log.debug("Channel init"))
-            .doOnConnect(c -> log.debug("Connect"))
-            .doOnConnected(c -> log.debug("Connected"))
-            .doOnDisconnected(c -> log.debug("Disconnected"))
-            .doOnResolve(c -> log.debug("Resolve"))
-            .doOnResolveError((c, t) -> log.debug("Resolve error"))
+            // Wiretap
+            .wiretap(wiretap)
             // Sets connection
             .host(host)
             .port(port)
             // Adds handler
-            .handle(this::handleResponse)
+            .handle(handler)
             // Connect
             .connectNow();
-
-        connection.addHandlerLast(new EventLoggerChannelHandler());
 
         log.trace("Started client");
     }
 
     @Override
     public final void request() {
-        final Publisher<? extends ByteBuf> dataStream;
+        final Publisher<String> dataStream;
 
         log.debug("Sending empty message");
 
         // Request data
-        dataStream = Mono.just(Unpooled.EMPTY_BUFFER)
-            .flux()
-            // Will send the response to the listener
-            .doOnNext(s -> listener.onSend(""));
-
-        // Sends request
-        connection.outbound()
-            .send(dataStream)
-            .then()
-            .doOnError(this::handleError)
-            .subscribe();
-
-        log.debug("Sent message");
-    }
-
-    @Override
-    public final void request(final String message) {
-        final Publisher<? extends String> dataStream;
-
-        log.debug("Sending message {}", message);
-
-        // Request data
-        dataStream = Mono.just(message)
-            .flux()
-            // Will send the response to the listener
-            .doOnNext(s -> listener.onSend(s));
+        dataStream = buildStream("");
 
         // Sends request
         connection.outbound()
             .sendString(dataStream)
             .then()
-            .doOnError(this::handleError)
+            // Subscribe to run
             .subscribe();
-
-        log.debug("Sent message");
     }
 
-    /**
-     * Error handler which sends errors to the log.
-     *
-     * @param ex
-     *            exception to log
-     */
-    private final void handleError(final Throwable ex) {
-        log.error(ex.getLocalizedMessage(), ex);
+    @Override
+    public final void request(final String message) {
+        final Publisher<String> dataStream;
+
+        log.debug("Sending {}", message);
+
+        // Request data
+        dataStream = buildStream(message);
+
+        // Sends request
+        connection.outbound()
+            .sendString(dataStream)
+            .then()
+            // Subscribe to run
+            .subscribe();
     }
 
-    /**
-     * Request event listener. Will receive any response sent by the server, and then send it to the listener.
-     *
-     * @param request
-     *            request channel
-     * @param response
-     *            response channel
-     * @return a publisher which handles the request
-     */
-    private final Publisher<Void> handleResponse(final NettyInbound request, final NettyOutbound response) {
-        log.debug("Setting up response handler");
-
-        // Receives the response
-        return request.receive()
-            // Log response
-            .doOnNext(next -> {
-                // Sends response to listener
-                final String msg;
-
-                log.debug("Handling response");
-
-                msg = next.toString(CharsetUtil.UTF_8);
-                listener.onReceive(msg);
-            })
-            // Error handling
-            .doOnError(this::handleError)
-            .then();
+    private final Publisher<String> buildStream(final String message) {
+        return Mono.just(message)
+            .flux()
+            .doOnNext(listener::onSend);
     }
 
 }
