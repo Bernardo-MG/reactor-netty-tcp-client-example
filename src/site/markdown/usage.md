@@ -11,7 +11,7 @@ This includes details on all the messages sent or received.
 To send the message 'Hello' to localhost:8080:
 
 ```
-java -jar target/client.jar message localhost 8080 Hello
+java -jar target/client.jar message --host=localhost --port=8080 --message=Hello
 ```
 
 ### Empty Message
@@ -19,7 +19,7 @@ java -jar target/client.jar message localhost 8080 Hello
 To send an empty TCP request to localhost:8080:
 
 ```
-java -jar target/client.jar empty localhost 8080
+java -jar target/client.jar empty --host=localhost --port=8080
 ```
 
 ### Multiple Messages
@@ -27,7 +27,7 @@ java -jar target/client.jar empty localhost 8080
 To send several consecutive messages to localhost:8080:
 
 ```
-java -jar target/client.jar multiple localhost 8080
+java -jar target/client.jar multiple --host=localhost --port=8080
 ```
 
 ## Help
@@ -49,5 +49,5 @@ java -jar target/client.jar message -h
 All the commands have a debug option, which prints logs on console:
 
 ```
-java -jar target/client.jar message localhost 8080 Hello --debug
+java -jar target/client.jar message --host=localhost --port=8080 --message=Hello --debug
 ```
