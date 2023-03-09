@@ -42,7 +42,6 @@ import picocli.CommandLine.Command;
 import picocli.CommandLine.Help;
 import picocli.CommandLine.Model.CommandSpec;
 import picocli.CommandLine.Option;
-import picocli.CommandLine.Parameters;
 import picocli.CommandLine.Spec;
 
 /**
@@ -65,19 +64,19 @@ public final class SendMessageCommand implements Runnable {
     /**
      * Server host.
      */
-    @Parameters(index = "0", description = "Server host.", paramLabel = "HOST")
+    @Option(names = { "-h", "--host" }, paramLabel = "URL", description = "Server host.", required = true)
     private String      host;
 
     /**
      * Message to send.
      */
-    @Parameters(index = "2", description = "Message to send.", paramLabel = "MSG")
+    @Option(names = { "-m", "--message" }, paramLabel = "text", description = "Message to send.", required = true)
     private String      message;
 
     /**
      * Server port.
      */
-    @Parameters(index = "1", description = "Server port.", paramLabel = "PORT")
+    @Option(names = { "-p", "--port" }, paramLabel = "port", description = "Server port.", required = true)
     private Integer     port;
 
     /**
@@ -96,8 +95,9 @@ public final class SendMessageCommand implements Runnable {
     /**
      * Response wait time. This is the number of seconds to wait for responses.
      */
-    @Option(names = { "--wait" }, paramLabel = "seconds", description = "Wait received seconds, to wait for responses.",
-            defaultValue = "2", showDefaultValue = Help.Visibility.ALWAYS)
+    @Option(names = { "-w", "--wait" }, paramLabel = "seconds",
+            description = "Wait received seconds, to wait for responses.", defaultValue = "2",
+            showDefaultValue = Help.Visibility.ALWAYS)
     private Integer     wait;
 
     /**
