@@ -16,7 +16,7 @@ java -jar target/client.jar message --host=localhost --port=8080 --message=Hello
 
 ### Empty Message
 
-To send an empty TCP request to localhost:8080:
+To send an empty request to localhost:8080:
 
 ```
 java -jar target/client.jar empty --host=localhost --port=8080

@@ -29,8 +29,6 @@ import java.util.function.BiFunction;
 
 import org.reactivestreams.Publisher;
 
-import lombok.NonNull;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
 import reactor.netty.Connection;
@@ -75,16 +73,28 @@ public final class ReactorNettyTcpClient implements Client {
     /**
      * Wiretap flag.
      */
-    @Setter
-    @NonNull
-    private Boolean                                                        wiretap = false;
+    private final boolean                                                  wiretap;
 
-    public ReactorNettyTcpClient(final String hst, final Integer prt, final TransactionListener lst) {
+    /**
+     * Constructs a client for the given port. The transaction listener will react to events when sending messages.
+     *
+     * @param hst
+     *            host to send the message
+     * @param prt
+     *            port to send the messages
+     * @param lst
+     *            message listener
+     * @param wtap
+     *            wiretap flag
+     */
+    public ReactorNettyTcpClient(final String hst, final Integer prt, final TransactionListener lst,
+            final boolean wtap) {
         super();
 
         port = Objects.requireNonNull(prt);
         host = Objects.requireNonNull(hst);
         listener = Objects.requireNonNull(lst);
+        wiretap = Objects.requireNonNull(wtap);
 
         handler = new InboundToListenerIoHandler(listener);
     }
@@ -120,23 +130,6 @@ public final class ReactorNettyTcpClient implements Client {
             .connectNow();
 
         log.trace("Started client");
-    }
-
-    @Override
-    public final void request() {
-        final Publisher<String> dataStream;
-
-        log.debug("Sending empty message");
-
-        // Request data
-        dataStream = buildStream("");
-
-        // Sends request
-        connection.outbound()
-            .sendString(dataStream)
-            .then()
-            // Subscribe to run
-            .subscribe();
     }
 
     @Override
