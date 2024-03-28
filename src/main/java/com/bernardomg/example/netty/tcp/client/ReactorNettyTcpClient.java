@@ -75,6 +75,18 @@ public final class ReactorNettyTcpClient implements Client {
      */
     private final boolean                                                  wiretap;
 
+    /**
+     * Constructs a client for the given port. The transaction listener will react to events when sending messages.
+     *
+     * @param hst
+     *            host to send the message
+     * @param prt
+     *            port to send the messages
+     * @param lst
+     *            message listener
+     * @param wtap
+     *            wiretap flag
+     */
     public ReactorNettyTcpClient(final String hst, final Integer prt, final TransactionListener lst,
             final boolean wtap) {
         super();
