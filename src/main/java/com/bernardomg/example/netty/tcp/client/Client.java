@@ -43,11 +43,6 @@ public interface Client {
     public void connect();
 
     /**
-     * Sends an empty request.
-     */
-    public void request();
-
-    /**
      * Sends the message through the connection.
      *
      * @param message

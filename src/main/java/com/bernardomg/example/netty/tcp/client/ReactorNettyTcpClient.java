@@ -123,23 +123,6 @@ public final class ReactorNettyTcpClient implements Client {
     }
 
     @Override
-    public final void request() {
-        final Publisher<String> dataStream;
-
-        log.debug("Sending empty message");
-
-        // Request data
-        dataStream = buildStream("");
-
-        // Sends request
-        connection.outbound()
-            .sendString(dataStream)
-            .then()
-            // Subscribe to run
-            .subscribe();
-    }
-
-    @Override
     public final void request(final String message) {
         final Publisher<String> dataStream;
 

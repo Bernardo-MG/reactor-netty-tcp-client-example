@@ -128,7 +128,7 @@ public final class SendEmptyMessageCommand implements Runnable {
         client.connect();
 
         // Send message
-        client.request();
+        client.request("");
 
         // Give time to the server for responses
         log.debug("Waiting {} seconds for responses", wait);
