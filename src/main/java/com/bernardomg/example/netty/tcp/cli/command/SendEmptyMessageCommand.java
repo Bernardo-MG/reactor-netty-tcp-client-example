@@ -34,6 +34,7 @@ import org.apache.logging.log4j.core.config.Configurator;
 
 import com.bernardomg.example.netty.tcp.cli.CliWriterTransactionListener;
 import com.bernardomg.example.netty.tcp.cli.version.ManifestVersionProvider;
+import com.bernardomg.example.netty.tcp.client.Client;
 import com.bernardomg.example.netty.tcp.client.ReactorNettyTcpClient;
 import com.bernardomg.example.netty.tcp.client.TransactionListener;
 
@@ -103,9 +104,9 @@ public final class SendEmptyMessageCommand implements Runnable {
 
     @Override
     public final void run() {
-        final PrintWriter           writer;
-        final ReactorNettyTcpClient client;
-        final TransactionListener   listener;
+        final PrintWriter         writer;
+        final Client              client;
+        final TransactionListener listener;
 
         if (debug) {
             activateDebugLog();
@@ -122,8 +123,7 @@ public final class SendEmptyMessageCommand implements Runnable {
 
         // Create client
         listener = new CliWriterTransactionListener(host, port, writer);
-        client = new ReactorNettyTcpClient(host, port, listener);
-        client.setWiretap(debug);
+        client = new ReactorNettyTcpClient(host, port, listener, debug);
 
         client.connect();
 
