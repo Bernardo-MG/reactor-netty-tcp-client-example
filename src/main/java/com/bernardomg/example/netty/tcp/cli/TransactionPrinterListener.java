@@ -30,12 +30,12 @@ import java.util.Objects;
 import com.bernardomg.example.netty.tcp.client.TransactionListener;
 
 /**
- * Transaction listener which will write the context of each step into the CLI console.
+ * Transaction listener which will write the context of each step into a {@link PrintWriter}.
  *
  * @author Bernardo Mart&iacute;nez Garrido
  *
  */
-public final class CliWriterTransactionListener implements TransactionListener {
+public final class TransactionPrinterListener implements TransactionListener {
 
     /**
      * Host for the server to which this client will connect.
@@ -48,11 +48,11 @@ public final class CliWriterTransactionListener implements TransactionListener {
     private final Integer     port;
 
     /**
-     * CLI writer, to print console messages.
+     * Print writer, where the messages will be sent.
      */
     private final PrintWriter writer;
 
-    public CliWriterTransactionListener(final String hst, final Integer prt, final PrintWriter wrt) {
+    public TransactionPrinterListener(final String hst, final Integer prt, final PrintWriter wrt) {
         super();
 
         port = Objects.requireNonNull(prt);

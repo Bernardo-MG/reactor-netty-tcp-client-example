@@ -32,7 +32,7 @@ import java.util.concurrent.TimeUnit;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.core.config.Configurator;
 
-import com.bernardomg.example.netty.tcp.cli.CliWriterTransactionListener;
+import com.bernardomg.example.netty.tcp.cli.TransactionPrinterListener;
 import com.bernardomg.example.netty.tcp.cli.version.ManifestVersionProvider;
 import com.bernardomg.example.netty.tcp.client.Client;
 import com.bernardomg.example.netty.tcp.client.ReactorNettyTcpClient;
@@ -122,7 +122,7 @@ public final class SendEmptyMessageCommand implements Runnable {
         }
 
         // Create client
-        listener = new CliWriterTransactionListener(host, port, writer);
+        listener = new TransactionPrinterListener(host, port, writer);
         client = new ReactorNettyTcpClient(host, port, listener, debug);
 
         client.connect();
