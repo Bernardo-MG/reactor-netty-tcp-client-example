@@ -42,5 +42,13 @@
                 Cleaned up code.
             </action>
         </release>
+        <release version="1.0.6" date="2023-05-11" description="Cleaned up docs">
+            <action dev="bmg" type="update">
+                Cleaned up readme.
+            </action>
+            <action dev="bmg" type="remove">
+                Docs are no longer deployed.
+            </action>
+        </release>
     </body>
 </document>

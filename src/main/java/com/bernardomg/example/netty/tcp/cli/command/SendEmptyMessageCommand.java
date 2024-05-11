@@ -32,7 +32,7 @@ import java.util.concurrent.TimeUnit;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.core.config.Configurator;
 
-import com.bernardomg.example.netty.tcp.cli.CliWriterTransactionListener;
+import com.bernardomg.example.netty.tcp.cli.TransactionPrinterListener;
 import com.bernardomg.example.netty.tcp.cli.version.ManifestVersionProvider;
 import com.bernardomg.example.netty.tcp.client.Client;
 import com.bernardomg.example.netty.tcp.client.ReactorNettyTcpClient;
@@ -60,7 +60,7 @@ public final class SendEmptyMessageCommand implements Runnable {
      * Debug flag. Shows debug logs.
      */
     @Option(names = { "--debug" }, paramLabel = "flag", description = "Enable debug logs.", defaultValue = "false")
-    private Boolean     debug;
+    private boolean     debug;
 
     /**
      * Server host.
@@ -85,7 +85,7 @@ public final class SendEmptyMessageCommand implements Runnable {
      */
     @Option(names = { "--verbose" }, paramLabel = "flag", description = "Print information to console.",
             defaultValue = "true", showDefaultValue = Help.Visibility.ALWAYS)
-    private Boolean     verbose;
+    private boolean     verbose;
 
     /**
      * Response wait time. This is the number of seconds to wait for responses.
@@ -122,7 +122,7 @@ public final class SendEmptyMessageCommand implements Runnable {
         }
 
         // Create client
-        listener = new CliWriterTransactionListener(host, port, writer);
+        listener = new TransactionPrinterListener(host, port, writer);
         client = new ReactorNettyTcpClient(host, port, listener, debug);
 
         client.connect();
